@@ -1,0 +1,393 @@
+
+
+<div class="modal-body pt-1">
+    <form method="post"
+          action="{{ path(doctor.id ? 'admin_doctors_edit' : 'admin_doctors_new', doctor.id ? {id: doctor.id} : {}) }}"
+          id="doctor-form"
+          class="needs-validation"
+          novalidate>
+
+        <!-- Personal Information Section -->
+        <div class="form-section">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <h6 class="section-title fw-semibold text-primary mb-0">Personal Information</h6>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        {{ form_widget(form.firstName, {'attr': {
+                            'class': 'form-control form-control-lg',
+                            'placeholder': 'First Name',
+                            'id': 'firstName'
+                        }}) }}
+                        {{ form_label(form.firstName, null, {
+                            'label_attr': {'class': 'form-label'}
+                        }) }}
+                        <div class="input-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    {{ form_errors(form.firstName) }}
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        {{ form_widget(form.lastName, {'attr': {
+                            'class': 'form-control form-control-lg',
+                            'placeholder': 'Last Name',
+                            'id': 'lastName'
+                        }}) }}
+                        {{ form_label(form.lastName, null, {
+                            'label_attr': {'class': 'form-label'}
+                        }) }}
+                        <div class="input-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    {{ form_errors(form.lastName) }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Information Section -->
+        <div class="form-section">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-address-book"></i>
+                </div>
+                <h6 class="section-title fw-semibold text-primary mb-0">Contact Information</h6>
+            </div>
+            <div class="row g-3">
+                <div class="col-12">
+                    <div class="form-floating">
+                        {{ form_widget(form.email, {'attr': {
+                            'class': 'form-control form-control-lg',
+                            'placeholder': 'Email Address',
+                            'id': 'email'
+                        }}) }}
+                        {{ form_label(form.email, null, {
+                            'label_attr': {'class': 'form-label'}
+                        }) }}
+                        <div class="input-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                    </div>
+                    {{ form_errors(form.email) }}
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        {{ form_widget(form.plainPassword, {'attr': {
+                            'class': 'form-control form-control-lg',
+                            'placeholder': 'Password',
+                            'id': 'password'
+                        }}) }}
+                        {{ form_label(form.plainPassword, null, {
+                            'label_attr': {'class': 'form-label'}
+                        }) }}
+                        <div class="input-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                    </div>
+                    {{ form_errors(form.plainPassword) }}
+                    {% if doctor.id %}
+                        <div class="form-hint">
+                            <i class="fas fa-info-circle text-muted me-1"></i>
+                            <small class="text-muted">Leave blank to keep current password</small>
+                        </div>
+                    {% else %}
+                        <div class="form-hint">
+                            <i class="fas fa-info-circle text-muted me-1"></i>
+                            <small class="text-muted">Create a secure password</small>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        {{ form_widget(form.phone, {'attr': {
+                            'class': 'form-control form-control-lg',
+                            'placeholder': 'Phone Number',
+                            'id': 'phone'
+                        }}) }}
+                        {{ form_label(form.phone, null, {
+                            'label_attr': {'class': 'form-label'}
+                        }) }}
+                        <div class="input-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                    </div>
+                    {{ form_errors(form.phone) }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Professional Information Section -->
+        <div class="form-section">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-stethoscope"></i>
+                </div>
+                <h6 class="section-title fw-semibold text-primary mb-0">Professional Information</h6>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <div class="form-floating">
+                        {{ form_widget(form.specialty, {'attr': {
+                            'class': 'form-control form-control-lg',
+                            'placeholder': 'Specialty',
+                            'id': 'specialty'
+                        }}) }}
+                        {{ form_label(form.specialty, null, {
+                            'label_attr': {'class': 'form-label'}
+                        }) }}
+                        <div class="input-icon">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                    </div>
+                    {{ form_errors(form.specialty) }}
+                </div>
+
+                <div class="col-12">
+                    <div class="form-floating">
+                        {{ form_widget(form.bio, {'attr': {
+                            'class': 'form-control',
+                            'placeholder': 'Professional Bio',
+                            'id': 'bio',
+                            'style': 'height: 120px; resize: none;'
+                        }}) }}
+                        {{ form_label(form.bio, null, {
+                            'label_attr': {'class': 'form-label'}
+                        }) }}
+                        <div class="input-icon textarea-icon">
+                            <i class="fas fa-file-medical"></i>
+                        </div>
+                    </div>
+                    {{ form_errors(form.bio) }}
+                    <div class="form-hint">
+                        <i class="fas fa-info-circle text-muted me-1"></i>
+                        <small class="text-muted">Brief professional background and qualifications</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CSRF Token and hidden fields -->
+        {{ form_rest(form) }}
+
+        <!-- Form Actions -->
+        <div class="form-actions mt-4 pt-3 border-top">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="form-progress">
+                    <div class="progress" style="height: 4px; width: 120px;">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <small class="text-muted">All fields completed</small>
+                </div>
+                <div class="d-flex gap-3">
+                    <button type="button" class="btn btn-outline-secondary btn-lg px-4 py-2" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary btn-lg px-4 py-2 position-relative btn-submit">
+                        <span class="loading-spinner"></span>
+                        <i class="fas fa-{{ doctor.id ? 'save' : 'user-plus' }} me-2"></i>
+                        {{ doctor.id ? 'Update Doctor' : 'Create Doctor Account' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<style>
+    .modal-icon-wrapper {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #2c7be5 0%, #1a68d1 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+        box-shadow: 0 4px 15px rgba(44, 123, 229, 0.3);
+    }
+
+    .form-section {
+        position: relative;
+        margin-bottom: 2rem !important;
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding-bottom: 8px;
+        margin-bottom: 1.25rem !important;
+        border-bottom: 2px solid #f1f5fd;
+    }
+
+    .section-icon {
+        width: 36px;
+        height: 36px;
+        background: rgba(44, 123, 229, 0.1);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #2c7be5;
+        font-size: 0.9rem;
+    }
+
+    .section-title {
+        color: #2c7be5;
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-floating {
+        position: relative;
+    }
+
+    .form-floating > .form-control,
+    .form-floating > .form-select {
+        padding-left: 3rem;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        background: #fff;
+    }
+
+    .form-floating > .form-control:focus,
+    .form-floating > .form-select:focus {
+        border-color: #2c7be5;
+        box-shadow: 0 0 0 0.2rem rgba(44, 123, 229, 0.15);
+        background: #fff;
+    }
+
+    .form-floating > label {
+        padding-left: 3rem;
+        color: #6e84a3;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .form-floating > .form-control:focus ~ label,
+    .form-floating > .form-control:not(:placeholder-shown) ~ label,
+    .form-floating > .form-select:focus ~ label,
+    .form-floating > .form-select:not([value=""]):valid ~ label {
+        color: #2c7be5;
+        transform: scale(0.85) translateY(-0.9rem) translateX(-2.5rem);
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6e84a3;
+        z-index: 5;
+        transition: all 0.3s ease;
+    }
+
+    .textarea-icon {
+        top: 2rem;
+        transform: none;
+    }
+
+    .form-floating > .form-control:focus ~ .input-icon,
+    .form-floating > .form-select:focus ~ .input-icon {
+        color: #2c7be5;
+    }
+
+    .form-hint {
+        display: flex;
+        align-items: center;
+        font-size: 0.8rem;
+        margin-top: 0.5rem !important;
+    }
+
+    .form-actions {
+        background: #f9fbfd;
+        margin: -1.5rem;
+        margin-top: 1rem;
+        padding: 1.5rem;
+        border-radius: 0 0 20px 20px;
+    }
+
+    .form-progress small {
+        font-size: 0.75rem;
+        margin-top: 4px;
+        display: block;
+    }
+
+    .btn-submit {
+        background: linear-gradient(135deg, #2c7be5 0%, #1a68d1 100%);
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(44, 123, 229, 0.3);
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(44, 123, 229, 0.4);
+    }
+
+    .btn-outline-secondary {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-secondary:hover {
+        border-color: #6e84a3;
+        background-color: #f8f9fa;
+    }
+
+    .loading-spinner {
+        display: none;
+        width: 16px;
+        height: 16px;
+        border: 2px solid transparent;
+        border-top: 2px solid #ffffff;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin-right: 8px;
+    }
+
+    .btn-loading .loading-spinner {
+        display: inline-block;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 576px) {
+        .form-actions .d-flex {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-progress {
+            display: none;
+        }
+
+        .modal-icon-wrapper {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+        }
+
+        .form-actions {
+            margin: -1rem;
+            padding: 1.25rem;
+        }
+    }
+</style>

@@ -1,0 +1,1057 @@
+{# templates/admin/appointments/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}MedicalApp - Appointments Management{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        :root {
+            --primary: #2c7be5;
+            --primary-light: #e3ebf8;
+            --primary-dark: #1a68d1;
+            --secondary: #6e84a3;
+            --success: #00d97e;
+            --success-light: #e6f9f0;
+            --warning: #f6c343;
+            --warning-light: #fef8e6;
+            --danger: #e63757;
+            --danger-light: #fce9ec;
+            --info: #39afd1;
+            --info-light: #eaf5f9;
+            --light: #f9fbfd;
+            --dark: #12263f;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --gray-900: #212529;
+            --admin-primary: #4361ee;
+            --admin-primary-light: #edf2ff;
+            --admin-primary-dark: #3a56d4;
+            --card-bg: #ffffff;
+            --body-bg: #f5f7fb;
+            --sidebar-bg: #ffffff;
+            --gradient-primary: linear-gradient(135deg, #2c7be5 0%, #1a68d1 100%);
+            --gradient-success: linear-gradient(135deg, #00d97e 0%, #00b86c 100%);
+            --gradient-warning: linear-gradient(135deg, #f6c343 0%, #f4b223 100%);
+            --gradient-danger: linear-gradient(135deg, #e63757 0%, #d92545 100%);
+            --gradient-admin: linear-gradient(135deg, #4361ee 0%, #3a56d4 100%);
+            --shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            --shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            --shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+            --border-radius: 0.75rem;
+            --border-radius-sm: 0.5rem;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: var(--body-bg);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        /* Main Dashboard Layout */
+        .dashboard-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Navigation (Same as dashboard) */
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--gray-200);
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: var(--gradient-admin);
+            color: white;
+        }
+
+        .admin-avatar {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        .admin-info h6 {
+            margin-bottom: 0.25rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .admin-info small {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.85rem;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--gray-600);
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: var(--border-radius-sm);
+            color: var(--gray-700);
+            text-decoration: none;
+            margin-bottom: 0.5rem;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: var(--admin-primary-light);
+            color: var(--admin-primary-dark);
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: var(--gradient-admin);
+            color: white;
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+        }
+
+        .nav-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            background: var(--gray-100);
+            color: var(--gray-600);
+            transition: var(--transition);
+        }
+
+        .nav-item:hover .nav-icon {
+            background: white;
+        }
+
+        .nav-item.active .nav-icon {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: var(--border-radius-sm);
+            color: var(--danger);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .logout-btn:hover {
+            background: var(--danger-light);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+            max-width: calc(100% - 280px);
+        }
+
+        /* Top Header (Same as dashboard) */
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .header-left h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .header-left p {
+            color: var(--gray-600);
+            margin: 0;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .date-badge {
+            background: var(--gradient-admin);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
+        }
+
+        /* Stats Cards (Same as dashboard style) */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+
+        .stat-card.total::before { background: var(--primary); }
+        .stat-card.pending::before { background: var(--warning); }
+        .stat-card.confirmed::before { background: var(--success); }
+        .stat-card.cancelled::before { background: var(--danger); }
+
+        .stat-content {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card.total .stat-icon {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .stat-card.pending .stat-icon {
+            background: var(--warning-light);
+            color: var(--warning);
+        }
+
+        .stat-card.confirmed .stat-icon {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        .stat-card.cancelled .stat-icon {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .stat-numbers h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: var(--dark);
+        }
+
+        .stat-numbers p {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        /* Filter Section (Top of content, not sidebar) */
+        .filter-section {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+        }
+
+        .filter-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+        }
+
+        .filter-header h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        .filter-form {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .form-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .form-select, .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--border-radius-sm);
+            font-size: 0.9rem;
+            transition: var(--transition);
+            background: white;
+        }
+
+        .form-select:focus, .form-control:focus {
+            outline: none;
+            border-color: var(--admin-primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .btn-filter {
+            background: var(--gradient-admin);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius-sm);
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            height: 46px;
+        }
+
+        .btn-filter:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn-clear {
+            background: var(--gray-100);
+            color: var(--gray-700);
+            border: 1px solid var(--gray-300);
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius-sm);
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            height: 46px;
+        }
+
+        .btn-clear:hover {
+            background: var(--gray-200);
+            color: var(--dark);
+            text-decoration: none;
+        }
+
+        /* Appointments List Section */
+        .appointments-section {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        .appointments-count {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            font-weight: 500;
+        }
+
+        /* Appointment Cards */
+        .appointment-item {
+            display: flex;
+            align-items: center;
+            padding: 1.25rem;
+            background: var(--gray-100);
+            border-radius: var(--border-radius-sm);
+            transition: var(--transition);
+            border-left: 4px solid transparent;
+            margin-bottom: 1rem;
+        }
+
+        .appointment-item:hover {
+            background: var(--gray-200);
+            transform: translateX(5px);
+        }
+
+        .appointment-item.pending { border-left-color: var(--warning); }
+        .appointment-item.confirmed { border-left-color: var(--success); }
+        .appointment-item.cancelled { border-left-color: var(--danger); }
+
+        .appointment-time {
+            min-width: 100px;
+            text-align: center;
+            padding: 0.75rem;
+            background: white;
+            border-radius: 8px;
+            margin-right: 1.5rem;
+            border: 1px solid var(--gray-200);
+        }
+
+        .appointment-time .time {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark);
+            display: block;
+        }
+
+        .appointment-time .date {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+        }
+
+        .appointment-info {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .doctor-avatar {
+            background: var(--gradient-primary);
+        }
+
+        .patient-avatar {
+            background: var(--gradient-success);
+        }
+
+        .user-details h6 {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--dark);
+        }
+
+        .user-details p {
+            color: var(--gray-600);
+            font-size: 0.85rem;
+            margin: 0;
+        }
+
+        .appointment-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+        }
+
+        .appointment-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pending {
+            background: var(--warning-light);
+            color: var(--warning);
+        }
+
+        .status-confirmed {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        .status-cancelled {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .appointment-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-action {
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            border: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: var(--transition);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-view {
+            background: var(--admin-primary);
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: var(--admin-primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn-email {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .btn-email:hover {
+            background: var(--gray-300);
+            color: var(--dark);
+            transform: translateY(-2px);
+        }
+
+        /* Reference Badge */
+        .reference-badge {
+            font-size: 0.75rem;
+            color: var(--gray-600);
+            background: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-family: monospace;
+            border: 1px solid var(--gray-300);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--gray-600);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--gray-400);
+        }
+
+        .empty-state h5 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            margin-bottom: 1.5rem;
+        }
+
+        /* Footer */
+        .appointments-footer {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--gray-200);
+            margin-top: 2rem;
+        }
+
+        .appointments-footer p {
+            color: var(--gray-600);
+            font-size: 0.85rem;
+            margin: 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .sidebar {
+                width: 250px;
+            }
+            .main-content {
+                margin-left: 250px;
+                max-width: calc(100% - 250px);
+            }
+        }
+
+        @media (max-width: 992px) {
+            .dashboard-wrapper {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                margin-bottom: 1rem;
+            }
+            .main-content {
+                margin-left: 0;
+                max-width: 100%;
+                padding: 1rem;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .appointment-info {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .top-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .filter-form {
+                flex-direction: column;
+            }
+            .form-group {
+                min-width: 100%;
+            }
+            .appointment-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            .appointment-time {
+                width: 100%;
+                text-align: left;
+            }
+            .appointment-meta {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
+
+{% block body %}
+    <div class="dashboard-wrapper">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="admin-avatar">
+                    {{ app.user.firstName|first|upper }}{{ app.user.lastName|first|upper }}
+                </div>
+                <div class="admin-info">
+                    <h6>{{ app.user.firstName }} {{ app.user.lastName }}</h6>
+                    <small>Administrator</small>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Dashboard</div>
+                    <a href="{{ path('app_dashboard') }}" class="nav-item">
+                        <div class="nav-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        Overview
+                    </a>
+                    <a href="{{ path('admin_appointments') }}" class="nav-item active">
+                        <div class="nav-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        Appointments
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Management</div>
+                    <a href="{{ path('admin_doctors') }}" class="nav-item">
+                        <div class="nav-icon">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        Doctors
+                    </a>
+                    <a href="{{ path('admin_patients') }}" class="nav-item">
+                        <div class="nav-icon">
+                            <i class="fas fa-procedures"></i>
+                        </div>
+                        Patients
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="{{ path('app_logout') }}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt me-2"></i> Logout
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Header (Same as dashboard) -->
+            <div class="top-header">
+                <div class="header-left">
+                    <h1>Appointment Management</h1>
+                    <p>View and manage all patient appointments</p>
+                </div>
+                <div class="header-right">
+                    <div class="date-badge">
+                        <i class="fas fa-calendar-day me-2"></i>{{ "now"|date("l, F j, Y") }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Cards (Same style as dashboard) -->
+
+
+            <!-- Filter Section (Top of content, not sidebar) -->
+            <div class="filter-section">
+                <div class="filter-header">
+                    <h3><i class="fas fa-filter me-2 text-primary"></i>Filter Appointments</h3>
+                </div>
+
+                <form method="get" class="filter-form">
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select name="status" class="form-select">
+                            <option value="">All Statuses</option>
+                            <option value="Pending" {% if current_filters.status == 'Pending' %}selected{% endif %}>Pending</option>
+                            <option value="Confirmed" {% if current_filters.status == 'Confirmed' %}selected{% endif %}>Confirmed</option>
+                            <option value="Cancelled" {% if current_filters.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Date</label>
+                        <input type="date" name="date" class="form-control" value="{{ current_filters.date }}">
+                    </div>
+
+                    <div class="form-group" style="min-width: auto;">
+                        <button type="submit" class="btn-filter">
+                            <i class="fas fa-filter me-1"></i> Apply Filters
+                        </button>
+                    </div>
+
+                    <div class="form-group" style="min-width: auto;">
+                        <a href="{{ path('admin_appointments') }}" class="btn-clear">
+                            <i class="fas fa-times me-1"></i> Clear
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Appointments List -->
+            <div class="appointments-section">
+                <div class="section-header">
+                    <h3>Appointments List</h3>
+                    <div class="appointments-count">
+                        {{ appointments|length }} appointments
+                        {% if current_filters.status or current_filters.date %}
+                            <span class="text-primary">(filtered)</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Appointments List -->
+                <div class="appointments-content">
+                    {% if appointments is defined and appointments|length > 0 %}
+                        {% for appointment in appointments %}
+                            <div class="appointment-item {{ appointment.status|lower }}">
+                                <div class="appointment-time">
+                                    <span class="time">{{ appointment.startDateTime|date('h:i A') }}</span>
+                                    <span class="date">{{ appointment.startDateTime|date('M j, Y') }}</span>
+                                </div>
+
+                                <div class="appointment-info">
+                                    <!-- Doctor Info -->
+                                    <div class="user-info">
+                                        <div class="user-avatar doctor-avatar">
+                                            <i class="fas fa-user-md"></i>
+                                        </div>
+                                        <div class="user-details">
+                                            <h6>Dr. {{ appointment.doctor.client.firstName }} {{ appointment.doctor.client.lastName }}</h6>
+                                            <p>{{ appointment.doctor.specialty }}</p>
+                                            <p><i class="fas fa-envelope me-1"></i>{{ appointment.doctor.client.email }}</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Patient Info -->
+                                    <div class="user-info">
+                                        <div class="user-avatar patient-avatar">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div class="user-details">
+                                            <h6>{{ appointment.patient.client.firstName }} {{ appointment.patient.client.lastName }}</h6>
+                                            <p><i class="fas fa-phone me-1"></i>{{ appointment.patient.phone|default('No phone') }}</p>
+                                            <p><i class="fas fa-envelope me-1"></i>{{ appointment.patient.client.email }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="appointment-meta">
+                                    <div>
+                                        <span class="status-badge status-{{ appointment.status|lower }}">
+                                            {{ appointment.status }}
+                                        </span>
+                                        <span class="reference-badge ms-2">
+                                            #{{ appointment.reference }}
+                                        </span>
+                                    </div>
+
+                                    <div class="appointment-actions">
+                                        <button class="btn-action btn-view view-details"
+                                                data-id="{{ appointment.id }}"
+                                                data-bs-toggle="tooltip"
+                                                title="View Details">
+                                            <i class="fas fa-eye"></i> View
+                                        </button>
+                                        <a href="mailto:{{ appointment.patient.client.email }}"
+                                           class="btn-action btn-email"
+                                           data-bs-toggle="tooltip"
+                                           title="Email Patient">
+                                            <i class="fas fa-envelope"></i> Email
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <!-- Empty State -->
+                        <div class="empty-state">
+                            <i class="fas fa-calendar-times"></i>
+                            <h5>No Appointments Found</h5>
+                            <p>Try adjusting your filters or check back later for new appointments.</p>
+                            <a href="{{ path('admin_appointments') }}" class="btn-filter" style="width: auto; padding: 0.75rem 1.5rem;">
+                                <i class="fas fa-sync me-2"></i>Clear All Filters
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Footer -->
+                {% if appointments is defined and appointments|length > 0 %}
+                    <div class="appointments-footer">
+                        <p>
+                            Showing <strong class="text-primary">{{ appointments|length }}</strong> appointments
+                            {% if current_filters.status or current_filters.date %}
+                                <span class="ms-2">(filtered results)</span>
+                            {% endif %}
+                            • Updated: {{ "now"|date("h:i A") }}
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+
+    <!-- Appointment Details Modal -->
+    <div class="modal fade" id="appointmentModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background: var(--gradient-admin); color: white;">
+                    <h5 class="modal-title">Appointment Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="appointmentDetails">
+                    <!-- Content will be loaded here via JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // View details button click handler
+            document.querySelectorAll('.view-details').forEach(button => {
+                button.addEventListener('click', function() {
+                    const appointmentId = this.getAttribute('data-id');
+
+                    // Show loading state
+                    document.getElementById('appointmentDetails').innerHTML = `
+                        <div class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-3 text-muted">Loading appointment details...</p>
+                        </div>
+                    `;
+
+                    // Fetch the show page HTML
+                    fetch(`/admin/appointments/${appointmentId}`)
+                        .then(response => response.text())
+                        .then(html => {
+                            // Extract just the modal content from the HTML
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(html, 'text/html');
+                            const modalContent = doc.querySelector('.container-fluid').innerHTML;
+
+                            // Show in modal
+                            document.getElementById('appointmentDetails').innerHTML = `
+                                <div style="max-height: 70vh; overflow-y: auto;">
+                                    ${modalContent}
+                                </div>
+                            `;
+                        })
+                        .catch(error => {
+                            document.getElementById('appointmentDetails').innerHTML = `
+                                <div class="text-center py-5">
+                                    <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                                    <h5>Error Loading Details</h5>
+                                    <p class="text-muted">Could not load appointment details. Please try again.</p>
+                                    <a href="/admin/appointments/${appointmentId}" class="btn-filter mt-3" style="width: auto; padding: 0.75rem 1.5rem;">
+                                        View Full Page
+                                    </a>
+                                </div>
+                            `;
+                        });
+
+                    const modal = new bootstrap.Modal(document.getElementById('appointmentModal'));
+                    modal.show();
+                });
+            });
+
+            // Add animation to appointment items
+            const appointmentItems = document.querySelectorAll('.appointment-item');
+            appointmentItems.forEach((item, index) => {
+                item.style.animationDelay = `${index * 0.05}s`;
+            });
+
+            // Add animation to stats cards
+            const statCards = document.querySelectorAll('.stat-card');
+            statCards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+
+            // Auto-submit form when filters change (optional)
+            document.querySelector('select[name="status"]')?.addEventListener('change', function() {
+                this.form.submit();
+            });
+
+            document.querySelector('input[name="date"]')?.addEventListener('change', function() {
+                this.form.submit();
+            });
+        });
+    </script>
+{% endblock %}
